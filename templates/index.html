@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns="http://www.w3.org/1999/xhtml">
+    <meta charset="UTF-8">
+    <title>Music Recommendation using ML</title>
+    <div class="containerX">
+        <div class="rowX">
+            <div class="logo">
+                <li class="brand"><a href="index2.html"><img src="/static/logo.png" alt="Spotify"></a></li>
+                    <!-- <img src="/static/logo.png" alt="Logo"> -->
+                    <h1>Music by Jaypee</h1>
+                </a> 
+            </div>
+            <div class="cardX" style="width: 100%; height: 100%">
+                <!-- Your existing card content here -->
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+
+    <!-- Bootstrap CSS --> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    
+    <style>
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 80px; /* Adjust the size of the circular logo */
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Glow effect */
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .logo:hover img {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 1); /* Increase glow on hover */
+        }
+
+        .logo h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #fff; /* Adjust the color as needed */
+            font-size: 14px; /* Adjust the font size as needed */
+            margin-top: 10px;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+        body{
+            display: flex !important;
+            align-items: center !important;
+            text-align: center !important;
+            justify-content: space-between;
+            margin-top: 80px;
+            flex-direction: column;
+            /*background: rgb(7,9,8);
+            background: linear-gradient(90deg, rgba(7,9,8,1) 0%, rgba(0,0,0,1) 12%, rgba(50,74,61,1) 100%);
+            */
+            background-image: url('/static/musical-background-2842924_1280.jpeg');
+            background-size: cover;
+            background-color: #fff;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Additional styles for better visibility of content on top of the image */
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+        }
+        /*
+        .containerX{
+            color: white;
+        }
+        */
+        .cardX{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card-headerX{
+            font-family: 'Montserrat', sans-serif;
+        }
+        .card-bodyX{
+            width: 700px;
+        }
+        h1{
+            font-size: 150px;
+        }
+
+        
+        .input-group {
+        position: relative;
+        margin-top: 30px;
+        }
+
+        .input {
+        border: solid 1.5px #9e9e9e;
+        border-radius: 1rem;
+        background: none;
+        padding: 1rem;
+        font-size: 1rem;
+        color: #f5f5f5;
+        transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+        width: 500px;
+        }
+
+        .user-label {
+        position: absolute;
+        left: 15px;
+        color: #e8e8e8;
+        pointer-events: none;
+        transform: translateY(1rem);
+        transition: 150ms cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .input:focus, input:valid {
+        outline: none;
+        border: 1.5px solid #588157;
+        }
+
+        .input:focus ~ label, input:valid ~ label {
+        transform: translateY(-50%) scale(0.8);
+        background-color: #212121;
+        padding: 0 .2em;
+        color: #588157;
+        }
+        .cta {
+        border: none;
+        background: none;
+        margin-top: 30px;
+        }
+
+        .cta span {
+        padding-bottom: 7px;
+        letter-spacing: 4px;
+        font-size: 24px;
+        padding-right: 15px;
+        text-transform: uppercase;
+        }
+
+        .cta svg {
+        transform: translateX(-8px);
+        transition: all 0.3s ease;
+        }
+
+        .cta:hover svg {
+        transform: translateX(0);
+        }
+
+        .cta:active svg {
+        transform: scale(0.9);
+        }
+
+        .hover-underline-animation {
+        position: relative;
+        color: #588157;
+        padding-bottom: 20px;
+        }
+
+        .hover-underline-animation:after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #588157;
+        transform-origin: bottom right;
+        transition: transform 0.25s ease-out;
+        }
+
+        .cta:hover .hover-underline-animation:after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+        }
+    </style>
+
+</head>
+<body >
+
+<div class="containerX">
+    <div class="rowX">
+        <div class="cardX" style="width: 100%; height: 100%">
+            <div class="card-headerX" style="text-align: center">
+                <h2>Music Recommender using ML</h1>
+            </div>
+            <div class="card-bodyX">
+                <div  style="text-align: center">
+                    <h5>This is your one stop website to listen to similar songs of your preference! Just Search and have a pleasant time with the music you like!</h5>
+                </div>
+                <br>
+                <form action="/" method="POST" accept-charset="utf-8" name="Modelform">
+                    <div class="input-group">
+                        <input required="" type="text" name="song" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Song</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input required="" type="text" name="artist" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Artist</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="number" name="num" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Number of Similar tracks</label>
+                    </div>
+                    <!-- 
+                    <div class="input-group">
+                        <input required="" type="text" name="windbearing" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Wind Bearing</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="text" name="visibility" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Visibility</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="text" name="pressure" autocomplete="off" class="input">
+                        <label class="user-label">Enter the Pressure</label>
+                    </div>
+                    -->
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <!-- <button  class="btn btn-primary form-control" onclick="send_data()">Predict the Disease </button> -->
+                        <button class="cta" >
+                            <span class="hover-underline-animation"> Recommend now </span>
+                            <svg viewBox="0 0 46 16" height="10" width="30" xmlns="http://www.w3.org/2000/svg" id="arrow-horizontal">
+                                <path transform="translate(30)" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" data-name="Path 10" id="Path_10"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Display the results -->
+                    {% if result %}
+                    {% if result == "No similar tracks found. Please try different inputs." %}
+                        <div class="results">
+                            <p>{{ result }}</p>
+                        </div>
+                    {% else %}
+                        <div class="results">
+                            <h3>Similar Songs:</h3>
+                            <ul>
+                                {% for song in result %}
+                                    <li>{{ song }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                </form>
+                <br>
+                <!-- <div class="row">
+                    <div class="col-12" style="text-align: center">
+                        <h4><span id="prediction"></span></h4>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <div class="container">
+    <div class="row">
+        <div class="card mt-50" style="width: 100%; height: 100%">
+            <div class="card-header" style="text-align: center">
+                <h1>Potato Leaf Disease Detection</h1>
+            </div>
+            <div class="card-body">
+                <div class="col-12" style="text-align: center">
+                    <h5>Predicts the disease of potato leaf . Try filling the details below: </h5>
+                </div>
+                <br>
+                <form method="post" accept-charset="utf-8" name="Modelform">
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Temperature:</b> </label><br>
+                        <input type="text" class="form-control" id="temperature" name="temperature"
+                               placeholder="Enter the Temperature ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Humidity:</b> </label><br>
+                        <input type="text" class="form-control" id="humidity" name="humidity"
+                               placeholder="Enter the Humidity ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Wind Speed:</b> </label><br>
+                        <input type="text" class="form-control" id="windspeed" name="windspeed"
+                        placeholder="Enter the Wind Speed ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Wind Bearing:</b> </label><br>
+                        <input type="text" class="form-control" id="windbearing" name="windbearing"
+                               placeholder="Enter the Wind Bearing ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Visibility:</b> </label><br>
+                        <input type="text" class="form-control" id="visibility" name="visibility"
+                               placeholder="Enter the Visibility ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <label><b>Enter the Pressure:</b> </label><br>
+                        <input type="text" class="form-control" id="pressure" name="pressure"
+                               placeholder="Enter the Pressure ">
+                    </div>
+                    <div class="col-md-10 form-group" style="text-align: center">
+                        <button  class="btn btn-primary form-control" onclick="send_data()">Predict the Disease </button>
+                    </div>
+                </form>
+                <br>
+                <div class="row">
+                    <div class="col-12" style="text-align: center">
+                        <h4><span id="prediction"></span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  -->
+
+<script>
+
+    function form_handler(event) {
+        event.preventDefault(); // Don't submit the form normally
+    }
+    function send_data()
+    {
+        document.querySelector('form').addEventListener("submit",form_handler);
+
+        var fd=new FormData(document.querySelector('form'));
+
+        var xhr= new XMLHttpRequest({mozSystem: true});
+
+        xhr.open('POST','/predict',true);
+        document.getElementById('prediction').innerHTML="Wait! Predicting Songs.....";
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState == XMLHttpRequest.DONE){
+                document.getElementById('prediction').innerHTML="The Similar Songs of the given Song is-:"+xhr.responseText;
+
+            }
+        };
+
+        xhr.onload= function(){};
+
+        xhr.send(fd);
+    }
+</script>
+
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+</html>
